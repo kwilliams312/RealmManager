@@ -1,4 +1,4 @@
-.PHONY: up down build rebuild clean reset logs status stop start restart
+.PHONY: up down build rebuild clean reset logs status stop start restart test
 
 # --- Primary Commands ---
 
@@ -50,6 +50,9 @@ dev: ## Run Next.js dev server (outside Docker)
 
 typecheck: ## Run TypeScript type checker
 	bun tsc --noEmit
+
+test: ## Run the test suite
+	bun test
 
 # --- Help ---
 

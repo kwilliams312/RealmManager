@@ -204,6 +204,151 @@ function NavDropdown({ label, icon: Icon, items, pathname }: NavDropdownProps) {
   );
 }
 
+interface RealmPopulationGroup {
+  realmName: string;
+  items: NavDropdownItem[];
+}
+
+interface PopulationDropdownProps {
+  icon: React.ComponentType<IconProps>;
+  groups: RealmPopulationGroup[];
+  pathname: string;
+}
+
+function PopulationDropdown({ icon: Icon, groups, pathname }: PopulationDropdownProps) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const allItems = groups.flatMap((g) => g.items);
+  const isActiveGroup = allItems.some((i) => pathname.startsWith(i.href));
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          padding: "10px 16px",
+          marginBottom: -1,
+          background: "none",
+          border: "none",
+          borderBottom: isActiveGroup
+            ? "2px solid var(--accent)"
+            : "2px solid transparent",
+          color: isActiveGroup ? "var(--text-primary)" : "var(--text-secondary)",
+          fontSize: 14,
+          fontWeight: isActiveGroup ? 600 : 500,
+          cursor: "pointer",
+          transition: "all 0.15s",
+        }}
+      >
+        <Icon active={isActiveGroup} />
+        Population
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{
+            marginLeft: 2,
+            transform: open ? "rotate(180deg)" : "none",
+            transition: "transform 0.15s",
+          }}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {open && (
+        <div
+          style={{
+            position: "absolute",
+            top: "calc(100% + 1px)",
+            left: 0,
+            minWidth: 220,
+            background: "var(--bg-card)",
+            border: "1px solid var(--border)",
+            borderRadius: 8,
+            padding: "6px 0",
+            zIndex: 100,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+            animation: "slideIn 0.15s ease",
+          }}
+        >
+          {groups.map((group, gi) => (
+            <div key={group.realmName}>
+              {gi > 0 && (
+                <div style={{ height: 1, background: "var(--border)", margin: "4px 0" }} />
+              )}
+              <div
+                style={{
+                  padding: "6px 16px 2px",
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: "var(--text-tertiary)",
+                  textTransform: "uppercase",
+                  letterSpacing: 0.5,
+                }}
+              >
+                {group.realmName}
+              </div>
+              {group.items.map((item) => {
+                const active = pathname.startsWith(item.href);
+                const ItemIcon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      padding: "7px 16px 7px 24px",
+                      color: active ? "var(--accent)" : "var(--text-secondary)",
+                      fontSize: 13,
+                      fontWeight: active ? 600 : 500,
+                      textDecoration: "none",
+                      transition: "all 0.1s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "var(--bg-hover)";
+                      e.currentTarget.style.color = "var(--text-primary)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "transparent";
+                      e.currentTarget.style.color = active
+                        ? "#f59e0b"
+                        : "var(--text-secondary)";
+                    }}
+                  >
+                    <ItemIcon active={active} />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function NavBar({ user }: NavBarProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -221,7 +366,7 @@ export function NavBar({ user }: NavBarProps) {
       .catch(() => {});
   }, []);
 
-  const adminItems: NavDropdownItem[] = [
+  const systemItems: NavDropdownItem[] = [
     { href: "/accounts", label: "Accounts", icon: AccountIcon },
     { href: "/realms", label: "Realms", icon: GlobeIcon },
     { href: "/builds", label: "Builds", icon: BuildIcon },
@@ -229,16 +374,12 @@ export function NavBar({ user }: NavBarProps) {
     { href: "/settings", label: "Settings", icon: SettingsIcon },
   ];
 
-  const onlineItems: NavDropdownItem[] = realms.map((r) => ({
-    href: `/online/${r.id}`,
-    label: r.name,
-    icon: UsersIcon,
-  }));
-
-  const guildItems: NavDropdownItem[] = realms.map((r) => ({
-    href: `/guilds/${r.id}`,
-    label: r.name,
-    icon: GuildIcon,
+  const populationGroups: RealmPopulationGroup[] = realms.map((r) => ({
+    realmName: r.name,
+    items: [
+      { href: `/online/${r.id}`, label: "Who's Online", icon: UsersIcon },
+      { href: `/guilds/${r.id}`, label: "Guilds", icon: GuildIcon },
+    ],
   }));
 
   useEffect(() => {
@@ -300,36 +441,13 @@ export function NavBar({ user }: NavBarProps) {
           icon={SwordIcon}
           pathname={pathname}
         />
-        {realms.length === 1 ? (
-          <NavLink
-            href={`/online/${realms[0].id}`}
-            label="Who's Online"
+        {realms.length > 0 && (
+          <PopulationDropdown
             icon={UsersIcon}
+            groups={populationGroups}
             pathname={pathname}
           />
-        ) : realms.length > 1 ? (
-          <NavDropdown
-            label="Who's Online"
-            icon={UsersIcon}
-            items={onlineItems}
-            pathname={pathname}
-          />
-        ) : null}
-        {realms.length === 1 ? (
-          <NavLink
-            href={`/guilds/${realms[0].id}`}
-            label="Guilds"
-            icon={GuildIcon}
-            pathname={pathname}
-          />
-        ) : realms.length > 1 ? (
-          <NavDropdown
-            label="Guilds"
-            icon={GuildIcon}
-            items={guildItems}
-            pathname={pathname}
-          />
-        ) : null}
+        )}
         <NavLink
           href="/getting-started"
           label="Getting Started"
@@ -338,9 +456,9 @@ export function NavBar({ user }: NavBarProps) {
         />
         {isAdmin && (
           <NavDropdown
-            label="Admin"
+            label="System"
             icon={AdminShieldIcon}
-            items={adminItems}
+            items={systemItems}
             pathname={pathname}
           />
         )}
