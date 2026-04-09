@@ -1,0 +1,113 @@
+# RealmManager Standalone Docker Compose
+#
+# This runs RealmManager independently — no AzerothCore source checkout needed.
+# Services: MySQL database, AzerothCore auth server, and the RealmManager web UI.
+#
+# Quick start:
+#   docker compose up -d
+#
+# Customize with docker-compose.override.yml (not tracked in git).
+
+services:
+  ac-database:
+    container_name: ac-database
+    image: mysql:8.4
+    networks:
+      - ac-network
+    ports:
+      - ${DOCKER_DB_EXTERNAL_PORT:-3306}:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DOCKER_DB_ROOT_PASSWORD:-password}
+    volumes:
+      - ac-database:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: "/usr/bin/mysql --user=root --password=$$MYSQL_ROOT_PASSWORD --execute \"SHOW DATABASES;\""
+      interval: 5s
+      timeout: 10s
+      retries: 40
+
+  ac-db-import:
+    container_name: ac-db-import
+    image: ${AC_DB_IMPORT_IMAGE:-acore/ac-wotlk-db-import:master}
+    networks:
+      - ac-network
+    user: root
+    environment:
+      AC_DATA_DIR: "/azerothcore/env/dist/data"
+      AC_LOGS_DIR: "/azerothcore/env/dist/logs"
+      AC_LOGIN_DATABASE_INFO: "ac-database;3306;root;${DOCKER_DB_ROOT_PASSWORD:-password};acore_auth"
+      AC_WORLD_DATABASE_INFO: "ac-database;3306;root;${DOCKER_DB_ROOT_PASSWORD:-password};acore_world"
+      AC_CHARACTER_DATABASE_INFO: "ac-database;3306;root;${DOCKER_DB_ROOT_PASSWORD:-password};acore_characters"
+    volumes:
+      - ac-etc:/azerothcore/env/dist/etc
+      - ac-logs:/azerothcore/env/dist/logs
+    depends_on:
+      ac-database:
+        condition: service_healthy
+
+  ac-authserver:
+    container_name: ac-authserver
+    image: ${AC_AUTHSERVER_IMAGE:-acore/ac-wotlk-authserver:master}
+    networks:
+      - ac-network
+    tty: true
+    restart: unless-stopped
+    environment:
+      AC_LOGS_DIR: "/azerothcore/env/dist/logs"
+      AC_TEMP_DIR: "/azerothcore/env/dist/temp"
+      AC_LOGIN_DATABASE_INFO: "ac-database;3306;root;${DOCKER_DB_ROOT_PASSWORD:-password};acore_auth"
+      AC_UPDATES_ENABLE_DATABASES: "0"
+      AC_DISABLE_INTERACTIVE: "1"
+      AC_CLOSE_IDLE_CONNECTIONS: "0"
+    volumes:
+      - ac-etc:/azerothcore/env/dist/etc
+      - ac-logs:/azerothcore/env/dist/logs
+    ports:
+      - ${DOCKER_AUTH_EXTERNAL_PORT:-3724}:3724
+    depends_on:
+      ac-database:
+        condition: service_healthy
+      ac-db-import:
+        condition: service_completed_successfully
+
+  ac-webui:
+    container_name: ac-webui
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - ac-network
+    restart: unless-stopped
+    environment:
+      DB_HOST: ac-database
+      DB_PORT: "3306"
+      DB_USER: root
+      DB_PASS: ${DOCKER_DB_ROOT_PASSWORD:-password}
+      DB_ROOT_PASS: ${DOCKER_DB_ROOT_PASSWORD:-password}
+      DB_REALMD: acore_auth
+      DB_CHARACTERS: acore_characters
+      DB_WORLD: acore_world
+      SECRET_KEY: ${WEBUI_SECRET_KEY:-realmmanager-default-secret-change-me-in-production!}
+      REALM_DATA_DIR: /data/realms
+      REALM_HOST_DIR: ${REALM_HOST_DIR:-${PWD}/data/realms}
+      CONFIG_DIR: /data/etc
+      COMPOSE_PROJECT: ${COMPOSE_PROJECT_NAME:-realmmanager}
+    ports:
+      - ${DOCKER_WEBUI_EXTERNAL_PORT:-5555}:5555
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ac-etc:/data/etc:ro
+      - realmmanager-realm-data:/data/realms
+    depends_on:
+      ac-database:
+        condition: service_healthy
+
+volumes:
+  ac-database:
+  ac-etc:
+  ac-logs:
+  realmmanager-realm-data:
+
+networks:
+  ac-network:

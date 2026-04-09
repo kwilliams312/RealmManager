@@ -1,0 +1,18 @@
+[
+  {
+    "sourceId": "azerothcore-vanilla",
+    "name": "AzerothCore (Vanilla)",
+    "url": "https://github.com/azerothcore/azerothcore-wotlk",
+    "defaultBranch": "master",
+    "sourceType": "git",
+    "manifest": "vanilla.realmmanager.yaml"
+  },
+  {
+    "sourceId": "azerothcore-playerbots",
+    "name": "AzerothCore + Playerbots",
+    "url": "https://github.com/mod-playerbots/azerothcore-wotlk",
+    "defaultBranch": "Playerbot",
+    "sourceType": "git",
+    "manifest": "playerbots.realmmanager.yaml"
+  }
+]

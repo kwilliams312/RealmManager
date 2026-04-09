@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: RealmSource
+metadata:
+  name: vanilla
+  description: Vanilla AzerothCore — standard setup, no extras
+
+build:
+  dockerfile: apps/docker/Dockerfile
+  targets:
+    worldserver: worldserver
+    dbImport: db-import
+  submodules: false
+
+paths:
+  config: /azerothcore/env/dist/etc
+  refConfig: /azerothcore/env/ref/etc
+  data: /azerothcore/env/dist/data
+  logs: /azerothcore/env/dist/logs

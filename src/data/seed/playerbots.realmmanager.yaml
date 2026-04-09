@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: RealmSource
+metadata:
+  name: playerbots
+  description: AzerothCore with mod-playerbots — requires extra database and submodule clone
+
+build:
+  dockerfile: apps/docker/Dockerfile
+  targets:
+    worldserver: worldserver
+    dbImport: db-import
+  submodules: true
+
+modules:
+  - name: mod-playerbots
+    url: https://github.com/mod-playerbots/mod-playerbots.git
+    path: modules/mod-playerbots
+    branch: master
+
+databases:
+  - name: playerbots
+    importSqlFrom: /azerothcore/modules/mod-playerbots/data/sql/playerbots/base
+
+environment:
+  worldserver:
+    AC_PLAYERBOTS_DATABASE_INFO: "{dbHost};{dbPort};root;{dbPass};acore_playerbots_{realmId}"
+    AC_PLAYERBOTS_UPDATES_ENABLE_DATABASES: "0"
+    AC_PLAYERBOTS_DATABASE_WORKER_THREADS: "1"
+    AC_PLAYERBOTS_DATABASE_SYNCH_THREADS: "1"
+  dbImport:
+    AC_PLAYERBOTS_DATABASE_INFO: "{dbHost};{dbPort};root;{dbPass};acore_playerbots_{realmId}"
+
+paths:
+  config: /azerothcore/env/dist/etc
+  refConfig: /azerothcore/env/ref/etc
+  data: /azerothcore/env/dist/data
+  logs: /azerothcore/env/dist/logs
