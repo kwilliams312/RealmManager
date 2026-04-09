@@ -14,6 +14,8 @@ import {
   ClockIcon,
   CoinIcon,
 } from "@/components/Icons";
+import { OnlineTab } from "@/components/realm-tabs/OnlineTab";
+import { GuildsTab } from "@/components/realm-tabs/GuildsTab";
 
 const CLASS_COLORS: Record<string, string> = {
   "Death Knight": "#C41E3A",
@@ -83,7 +85,9 @@ interface RealmStatusData {
   players_online: number;
 }
 
-function RealmTabContent({ realm }: { realm: RealmData }) {
+type RealmSubTab = "overview" | "online" | "guilds";
+
+function RealmOverview({ realm }: { realm: RealmData }) {
   return (
     <>
       <div
@@ -164,11 +168,73 @@ function RealmTabContent({ realm }: { realm: RealmData }) {
   );
 }
 
+const SUB_TABS: Array<{ key: RealmSubTab; label: string; icon: React.ComponentType<{ active?: boolean; size?: number }> }> = [
+  { key: "overview", label: "Overview", icon: SwordIcon },
+  { key: "online", label: "Who's Online", icon: UsersIcon },
+  { key: "guilds", label: "Guilds", icon: GuildIcon },
+];
+
+function RealmTabContent({
+  realm,
+  subTab,
+  onSubTabChange,
+}: {
+  realm: RealmData;
+  subTab: RealmSubTab;
+  onSubTabChange: (tab: RealmSubTab) => void;
+}) {
+  return (
+    <>
+      <div
+        style={{
+          display: "flex",
+          gap: 4,
+          marginBottom: 20,
+          borderBottom: "1px solid var(--border)",
+        }}
+      >
+        {SUB_TABS.map((t) => {
+          const active = subTab === t.key;
+          const Icon = t.icon;
+          return (
+            <button
+              key={t.key}
+              onClick={() => onSubTabChange(t.key)}
+              style={{
+                padding: "8px 16px",
+                marginBottom: -1,
+                background: "none",
+                border: "none",
+                borderBottom: active ? "2px solid var(--accent)" : "2px solid transparent",
+                color: active ? "var(--text-primary)" : "var(--text-secondary)",
+                fontSize: 13,
+                fontWeight: active ? 700 : 500,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                transition: "all 0.15s",
+              }}
+            >
+              <Icon active={active} size={14} />
+              {t.label}
+            </button>
+          );
+        })}
+      </div>
+      {subTab === "overview" && <RealmOverview realm={realm} />}
+      {subTab === "online" && <OnlineTab key={realm.id} realmId={realm.id} />}
+      {subTab === "guilds" && <GuildsTab key={realm.id} realmId={realm.id} />}
+    </>
+  );
+}
+
 export default function DashboardPage() {
   const [dash, setDash] = useState<DashboardData | null>(null);
   const [realmStatus, setRealmStatus] = useState<{ realms: RealmStatusData[]; version: string } | null>(null);
   const [services, setServices] = useState<ServiceStatus[]>([]);
   const [activeRealmId, setActiveRealmId] = useState<number | null>(null);
+  const [subTab, setSubTab] = useState<RealmSubTab>("overview");
   const [loading, setLoading] = useState(true);
   const [realmAction, setRealmAction] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
@@ -451,7 +517,11 @@ export default function DashboardPage() {
                     </>
                   )}
                 </div>
-                <RealmTabContent realm={activeRealm} />
+                <RealmTabContent
+                  realm={activeRealm}
+                  subTab={subTab}
+                  onSubTabChange={setSubTab}
+                />
               </>
             );
           })()}
