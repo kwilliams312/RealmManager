@@ -8,6 +8,7 @@ import { query, executeDb, DB_REALMD } from "./db";
 import { type RealmManifest } from "./manifest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { load as yamlLoad } from "js-yaml";
 
 let tableCreated = false;
 let seeded = false;
@@ -147,9 +148,8 @@ async function seedSourcesFromDist(): Promise<void> {
       let manifest: string | null = null;
       if (src.manifest) {
         try {
-          const { load } = require("js-yaml") as typeof import("js-yaml");
           const yamlContent = readFileSync(join(seedDir, src.manifest), "utf-8");
-          const parsed = load(yamlContent);
+          const parsed = yamlLoad(yamlContent);
           manifest = JSON.stringify(parsed);
         } catch (err) {
           console.error(`[seed] Failed to load manifest ${src.manifest}:`, err);

@@ -39,8 +39,7 @@ const GM_LABELS: Record<number, string> = {
 interface NavLinkProps {
   href: string;
   label: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<IconProps>;
   pathname: string;
 }
 
@@ -73,17 +72,20 @@ function NavLink({ href, label, icon: Icon, pathname }: NavLinkProps) {
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+interface IconProps {
+  active?: boolean;
+  size?: number;
+}
+
 interface NavDropdownItem {
   href: string;
   label: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<IconProps>;
 }
 
 interface NavDropdownProps {
   label: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<IconProps>;
   items: NavDropdownItem[];
   pathname: string;
 }
