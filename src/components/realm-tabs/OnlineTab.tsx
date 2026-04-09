@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import type { TabProps } from "./types";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Spinner } from "@/components/Spinner";
+import { Pagination } from "@/components/Pagination";
 
 interface Player {
   name: string;
@@ -28,22 +28,28 @@ const COLUMNS: Array<{ key: PlayerKey; label: string }> = [
   { key: "guild", label: "Guild" },
 ];
 
-export function OnlineTab({ realm }: TabProps) {
+interface OnlineTabProps {
+  realmId: number;
+}
+
+export function OnlineTab({ realmId }: OnlineTabProps): React.ReactElement {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [showBots, setShowBots] = useState(false);
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<PlayerKey>("level");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   const fetchPlayers = useCallback(async () => {
     try {
-      const res = await fetch(`/api/realms/${realm.id}/online`);
+      const res = await fetch(`/api/realms/${realmId}/online`);
       const data = await res.json();
       if (data.players) setPlayers(data.players);
     } catch { /* ignore */ }
     setLoading(false);
-  }, [realm.id]);
+  }, [realmId]);
 
   useEffect(() => {
     setLoading(true);
@@ -52,30 +58,41 @@ export function OnlineTab({ realm }: TabProps) {
     return () => clearInterval(interval);
   }, [fetchPlayers]);
 
-  const handleSort = (key: PlayerKey) => {
+  useEffect(() => {
+    setPage(1);
+  }, [search, showBots, sortKey, sortDir, pageSize]);
+
+  const handleSort = (key: PlayerKey): void => {
     if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
     else { setSortKey(key); setSortDir("asc"); }
   };
 
-  let filtered = players.filter((p) => {
-    if (!showBots && p.is_bot) return false;
-    if (search) {
-      const q = search.toLowerCase();
-      return p.name.toLowerCase().includes(q) || (p.guild?.toLowerCase().includes(q) ?? false);
-    }
-    return true;
-  });
+  const filtered = useMemo(() => {
+    const f = players.filter((p) => {
+      if (!showBots && p.is_bot) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        return p.name.toLowerCase().includes(q) || (p.guild?.toLowerCase().includes(q) ?? false);
+      }
+      return true;
+    });
+    f.sort((a, b) => {
+      const av = a[sortKey];
+      const bv = b[sortKey];
+      if (sortKey === "level") {
+        return sortDir === "asc" ? Number(av) - Number(bv) : Number(bv) - Number(av);
+      }
+      const as = (av ?? "").toString().toLowerCase();
+      const bs = (bv ?? "").toString().toLowerCase();
+      return sortDir === "asc" ? as.localeCompare(bs) : bs.localeCompare(as);
+    });
+    return f;
+  }, [players, showBots, search, sortKey, sortDir]);
 
-  filtered = [...filtered].sort((a, b) => {
-    const av = a[sortKey];
-    const bv = b[sortKey];
-    if (sortKey === "level") {
-      return sortDir === "asc" ? Number(av) - Number(bv) : Number(bv) - Number(av);
-    }
-    const as = (av ?? "").toString().toLowerCase();
-    const bs = (bv ?? "").toString().toLowerCase();
-    return sortDir === "asc" ? as.localeCompare(bs) : bs.localeCompare(as);
-  });
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const safePage = Math.min(Math.max(1, page), totalPages);
+  const pageStart = (safePage - 1) * pageSize;
+  const pageItems = filtered.slice(pageStart, pageStart + pageSize);
 
   if (loading) return <div style={{ textAlign: "center", padding: 40 }}><Spinner size={24} /></div>;
 
@@ -107,49 +124,58 @@ export function OnlineTab({ realm }: TabProps) {
           {players.length === 0 ? "No players online" : "No players match your search"}
         </div>
       ) : (
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                {COLUMNS.map((col) => (
-                  <th
-                    key={col.key}
-                    onClick={() => handleSort(col.key)}
-                    style={{
-                      padding: "8px 12px", textAlign: "left",
-                      color: sortKey === col.key ? "var(--accent)" : "var(--text-secondary)",
-                      fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-                      letterSpacing: 0.5, cursor: "pointer", userSelect: "none",
-                    }}
-                  >
-                    {col.label} {sortKey === col.key ? (sortDir === "asc" ? "↑" : "↓") : ""}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((p) => (
-                <tr key={p.name} style={{ borderBottom: "1px solid var(--border)", opacity: p.is_bot ? 0.6 : 1 }}>
-                  <td style={{ padding: "8px 12px" }}>
-                    {p.name}
-                    {p.is_bot && (
-                      <span style={{ marginLeft: 6, fontSize: 10, background: "var(--bg-hover)", borderRadius: 4, padding: "1px 5px", color: "var(--text-secondary)" }}>BOT</span>
-                    )}
-                  </td>
-                  <td style={{ padding: "8px 12px", color: "var(--accent)", fontWeight: 700 }}>{p.level}</td>
-                  <td style={{ padding: "8px 12px" }}>{p.race}</td>
-                  <td style={{ padding: "8px 12px" }}>{p.class}</td>
-                  <td style={{ padding: "8px 12px" }}>
-                    <span style={{ color: FACTION_COLORS[p.faction] ?? "inherit", fontWeight: 600 }}>
-                      {p.faction}
-                    </span>
-                  </td>
-                  <td style={{ padding: "8px 12px", color: "var(--text-secondary)" }}>{p.guild ?? "—"}</td>
+        <>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid var(--border)" }}>
+                  {COLUMNS.map((col) => (
+                    <th
+                      key={col.key}
+                      onClick={() => handleSort(col.key)}
+                      style={{
+                        padding: "8px 12px", textAlign: "left",
+                        color: sortKey === col.key ? "var(--accent)" : "var(--text-secondary)",
+                        fontSize: 11, fontWeight: 700, textTransform: "uppercase",
+                        letterSpacing: 0.5, cursor: "pointer", userSelect: "none",
+                      }}
+                    >
+                      {col.label} {sortKey === col.key ? (sortDir === "asc" ? "↑" : "↓") : ""}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {pageItems.map((p) => (
+                  <tr key={p.name} style={{ borderBottom: "1px solid var(--border)", opacity: p.is_bot ? 0.6 : 1 }}>
+                    <td style={{ padding: "8px 12px" }}>
+                      {p.name}
+                      {p.is_bot && (
+                        <span style={{ marginLeft: 6, fontSize: 10, background: "var(--bg-hover)", borderRadius: 4, padding: "1px 5px", color: "var(--text-secondary)" }}>BOT</span>
+                      )}
+                    </td>
+                    <td style={{ padding: "8px 12px", color: "var(--accent)", fontWeight: 700 }}>{p.level}</td>
+                    <td style={{ padding: "8px 12px" }}>{p.race}</td>
+                    <td style={{ padding: "8px 12px" }}>{p.class}</td>
+                    <td style={{ padding: "8px 12px" }}>
+                      <span style={{ color: FACTION_COLORS[p.faction] ?? "inherit", fontWeight: 600 }}>
+                        {p.faction}
+                      </span>
+                    </td>
+                    <td style={{ padding: "8px 12px", color: "var(--text-secondary)" }}>{p.guild ?? "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <Pagination
+            totalItems={filtered.length}
+            page={safePage}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
+          />
+        </>
       )}
     </div>
   );

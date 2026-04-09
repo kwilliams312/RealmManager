@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import type { TabProps } from "./types";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Spinner } from "@/components/Spinner";
+import { Pagination } from "@/components/Pagination";
 
 interface GuildMember {
   name: string;
@@ -25,31 +25,50 @@ interface Guild {
   created: number;
 }
 
-export function GuildsTab({ realm }: TabProps) {
+interface GuildsTabProps {
+  realmId: number;
+}
+
+export function GuildsTab({ realmId }: GuildsTabProps): React.ReactElement {
   const [guilds, setGuilds] = useState<Guild[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<number | null>(null);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   const fetchGuilds = useCallback(async () => {
     try {
-      const res = await fetch(`/api/realms/${realm.id}/guilds`);
+      const res = await fetch(`/api/realms/${realmId}/guilds`);
       const data = await res.json();
       if (data.guilds) setGuilds(data.guilds);
     } catch { /* ignore */ }
     setLoading(false);
-  }, [realm.id]);
+  }, [realmId]);
 
   useEffect(() => {
     setLoading(true);
     fetchGuilds();
   }, [fetchGuilds]);
 
-  if (loading) return <div style={{ textAlign: "center", padding: 40 }}><Spinner size={24} /></div>;
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return guilds;
+    return guilds.filter((g) =>
+      g.name.toLowerCase().includes(q) || g.leader.toLowerCase().includes(q)
+    );
+  }, [guilds, search]);
 
-  const filtered = guilds.filter((g) =>
-    !search || g.name.toLowerCase().includes(search.toLowerCase()) || g.leader.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    setPage(1);
+  }, [search, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const safePage = Math.min(Math.max(1, page), totalPages);
+  const pageStart = (safePage - 1) * pageSize;
+  const pageItems = filtered.slice(pageStart, pageStart + pageSize);
+
+  if (loading) return <div style={{ textAlign: "center", padding: 40 }}><Spinner size={24} /></div>;
 
   return (
     <div>
@@ -75,81 +94,90 @@ export function GuildsTab({ realm }: TabProps) {
           {guilds.length === 0 ? "No guilds on this realm" : "No guilds match your search"}
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {filtered.map((guild) => {
-            const isOpen = expanded === guild.id;
-            const online = guild.members.filter((m) => m.online).length;
-            return (
-              <div
-                key={guild.id}
-                style={{
-                  background: "var(--bg-secondary)", border: "1px solid var(--border)",
-                  borderRadius: 8, overflow: "hidden",
-                }}
-              >
-                <button
-                  onClick={() => setExpanded(isOpen ? null : guild.id)}
+        <>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {pageItems.map((guild) => {
+              const isOpen = expanded === guild.id;
+              const online = guild.members.filter((m) => m.online).length;
+              return (
+                <div
+                  key={guild.id}
                   style={{
-                    width: "100%", padding: "12px 16px", display: "flex", alignItems: "center",
-                    gap: 12, background: "none", border: "none", cursor: "pointer",
-                    textAlign: "left", color: "var(--text-primary)",
+                    background: "var(--bg-secondary)", border: "1px solid var(--border)",
+                    borderRadius: 8, overflow: "hidden",
                   }}
                 >
-                  <span style={{ fontSize: 14, fontWeight: 700, flex: 1 }}>{guild.name}</span>
-                  <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>
-                    Leader: <strong>{guild.leader}</strong>
-                  </span>
-                  <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>
-                    {guild.member_count} members
-                    {online > 0 && (
-                      <span style={{ color: "var(--green)", marginLeft: 6 }}>({online} online)</span>
-                    )}
-                  </span>
-                  <span style={{ fontSize: 12, color: "var(--yellow)" }}>
-                    {guild.bank_gold > 0 ? `${guild.bank_gold.toLocaleString()}g` : ""}
-                  </span>
-                  <span style={{ color: "var(--text-secondary)", fontSize: 14 }}>{isOpen ? "▲" : "▼"}</span>
-                </button>
+                  <button
+                    onClick={() => setExpanded(isOpen ? null : guild.id)}
+                    style={{
+                      width: "100%", padding: "12px 16px", display: "flex", alignItems: "center",
+                      gap: 12, background: "none", border: "none", cursor: "pointer",
+                      textAlign: "left", color: "var(--text-primary)",
+                    }}
+                  >
+                    <span style={{ fontSize: 14, fontWeight: 700, flex: 1 }}>{guild.name}</span>
+                    <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                      Leader: <strong>{guild.leader}</strong>
+                    </span>
+                    <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                      {guild.member_count} members
+                      {online > 0 && (
+                        <span style={{ color: "var(--green)", marginLeft: 6 }}>({online} online)</span>
+                      )}
+                    </span>
+                    <span style={{ fontSize: 12, color: "var(--yellow)" }}>
+                      {guild.bank_gold > 0 ? `${guild.bank_gold.toLocaleString()}g` : ""}
+                    </span>
+                    <span style={{ color: "var(--text-secondary)", fontSize: 14 }}>{isOpen ? "▲" : "▼"}</span>
+                  </button>
 
-                {isOpen && (
-                  <div style={{ padding: "0 16px 16px" }}>
-                    {guild.motd && (
-                      <p style={{ fontSize: 12, color: "var(--accent)", marginBottom: 12, fontStyle: "italic" }}>
-                        &ldquo;{guild.motd}&rdquo;
-                      </p>
-                    )}
-                    <div style={{ overflowX: "auto" }}>
-                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-                        <thead>
-                          <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                            {["Name", "Level", "Class", "Race", "Online"].map((h) => (
-                              <th key={h} style={{ padding: "6px 10px", textAlign: "left", color: "var(--text-secondary)", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.5 }}>
-                                {h}
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {guild.members.map((m) => (
-                            <tr key={m.name} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                              <td style={{ padding: "5px 10px" }}>{m.name}</td>
-                              <td style={{ padding: "5px 10px", color: "var(--accent)", fontWeight: 700 }}>{m.level}</td>
-                              <td style={{ padding: "5px 10px" }}>{m.class}</td>
-                              <td style={{ padding: "5px 10px" }}>{m.race}</td>
-                              <td style={{ padding: "5px 10px" }}>
-                                <span style={{ width: 8, height: 8, borderRadius: "50%", background: m.online ? "var(--green)" : "var(--text-secondary)", display: "inline-block" }} />
-                              </td>
+                  {isOpen && (
+                    <div style={{ padding: "0 16px 16px" }}>
+                      {guild.motd && (
+                        <p style={{ fontSize: 12, color: "var(--accent)", marginBottom: 12, fontStyle: "italic" }}>
+                          &ldquo;{guild.motd}&rdquo;
+                        </p>
+                      )}
+                      <div style={{ overflowX: "auto" }}>
+                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                          <thead>
+                            <tr style={{ borderBottom: "1px solid var(--border)" }}>
+                              {["Name", "Level", "Class", "Race", "Online"].map((h) => (
+                                <th key={h} style={{ padding: "6px 10px", textAlign: "left", color: "var(--text-secondary)", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                                  {h}
+                                </th>
+                              ))}
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {guild.members.map((m) => (
+                              <tr key={m.name} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                <td style={{ padding: "5px 10px" }}>{m.name}</td>
+                                <td style={{ padding: "5px 10px", color: "var(--accent)", fontWeight: 700 }}>{m.level}</td>
+                                <td style={{ padding: "5px 10px" }}>{m.class}</td>
+                                <td style={{ padding: "5px 10px" }}>{m.race}</td>
+                                <td style={{ padding: "5px 10px" }}>
+                                  <span style={{ width: 8, height: 8, borderRadius: "50%", background: m.online ? "var(--green)" : "var(--text-secondary)", display: "inline-block" }} />
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <Pagination
+            totalItems={filtered.length}
+            page={safePage}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
+          />
+        </>
       )}
     </div>
   );
