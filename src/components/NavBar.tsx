@@ -217,6 +217,7 @@ interface PopulationDropdownProps {
 
 function PopulationDropdown({ icon: Icon, groups, pathname }: PopulationDropdownProps) {
   const [open, setOpen] = useState(false);
+  const [activeRealm, setActiveRealm] = useState<number | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const allItems = groups.flatMap((g) => g.items);
   const isActiveGroup = allItems.some((i) => pathname.startsWith(i.href));
@@ -225,6 +226,7 @@ function PopulationDropdown({ icon: Icon, groups, pathname }: PopulationDropdown
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
+        setActiveRealm(null);
       }
     };
     document.addEventListener("mousedown", handler);
@@ -234,7 +236,10 @@ function PopulationDropdown({ icon: Icon, groups, pathname }: PopulationDropdown
   return (
     <div ref={ref} style={{ position: "relative" }}>
       <button
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          setOpen((v) => !v);
+          setActiveRealm(null);
+        }}
         style={{
           display: "flex",
           alignItems: "center",
@@ -279,7 +284,7 @@ function PopulationDropdown({ icon: Icon, groups, pathname }: PopulationDropdown
             position: "absolute",
             top: "calc(100% + 1px)",
             left: 0,
-            minWidth: 220,
+            minWidth: 180,
             background: "var(--bg-card)",
             border: "1px solid var(--border)",
             borderRadius: 8,
@@ -289,60 +294,119 @@ function PopulationDropdown({ icon: Icon, groups, pathname }: PopulationDropdown
             animation: "slideIn 0.15s ease",
           }}
         >
-          {groups.map((group, gi) => (
-            <div key={group.realmName}>
-              {gi > 0 && (
-                <div style={{ height: 1, background: "var(--border)", margin: "4px 0" }} />
-              )}
+          {groups.map((group, gi) => {
+            const realmActive = group.items.some((i) => pathname.startsWith(i.href));
+            const submenuOpen = activeRealm === gi;
+            return (
               <div
-                style={{
-                  padding: "6px 16px 2px",
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: "var(--text-tertiary)",
-                  textTransform: "uppercase",
-                  letterSpacing: 0.5,
-                }}
+                key={group.realmName}
+                style={{ position: "relative" }}
+                onMouseEnter={() => setActiveRealm(gi)}
+                onMouseLeave={() => setActiveRealm(null)}
               >
-                {group.realmName}
-              </div>
-              {group.items.map((item) => {
-                const active = pathname.startsWith(item.href);
-                const ItemIcon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setOpen(false)}
+                <button
+                  onClick={() => setActiveRealm(submenuOpen ? null : gi)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "9px 16px",
+                    width: "100%",
+                    background: submenuOpen ? "var(--bg-hover)" : "transparent",
+                    border: "none",
+                    color: realmActive ? "var(--accent)" : "var(--text-secondary)",
+                    fontSize: 13,
+                    fontWeight: realmActive ? 600 : 500,
+                    cursor: "pointer",
+                    textAlign: "left",
+                    transition: "all 0.1s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "var(--bg-hover)";
+                    e.currentTarget.style.color = "var(--text-primary)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = submenuOpen ? "var(--bg-hover)" : "transparent";
+                    e.currentTarget.style.color = realmActive
+                      ? "var(--accent)"
+                      : "var(--text-secondary)";
+                  }}
+                >
+                  <GlobeIcon active={realmActive} size={14} />
+                  {group.realmName}
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ marginLeft: "auto" }}
+                  >
+                    <polyline points="9 6 15 12 9 18" />
+                  </svg>
+                </button>
+                {submenuOpen && (
+                  <div
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      padding: "7px 16px 7px 24px",
-                      color: active ? "var(--accent)" : "var(--text-secondary)",
-                      fontSize: 13,
-                      fontWeight: active ? 600 : 500,
-                      textDecoration: "none",
-                      transition: "all 0.1s",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "var(--bg-hover)";
-                      e.currentTarget.style.color = "var(--text-primary)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "transparent";
-                      e.currentTarget.style.color = active
-                        ? "#f59e0b"
-                        : "var(--text-secondary)";
+                      position: "absolute",
+                      top: 0,
+                      left: "100%",
+                      minWidth: 170,
+                      background: "var(--bg-card)",
+                      border: "1px solid var(--border)",
+                      borderRadius: 8,
+                      padding: "6px 0",
+                      zIndex: 101,
+                      boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+                      animation: "slideIn 0.15s ease",
                     }}
                   >
-                    <ItemIcon active={active} />
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </div>
-          ))}
+                    {group.items.map((item) => {
+                      const active = pathname.startsWith(item.href);
+                      const ItemIcon = item.icon;
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => {
+                            setOpen(false);
+                            setActiveRealm(null);
+                          }}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 10,
+                            padding: "9px 16px",
+                            color: active ? "var(--accent)" : "var(--text-secondary)",
+                            fontSize: 13,
+                            fontWeight: active ? 600 : 500,
+                            textDecoration: "none",
+                            transition: "all 0.1s",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = "var(--bg-hover)";
+                            e.currentTarget.style.color = "var(--text-primary)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = "transparent";
+                            e.currentTarget.style.color = active
+                              ? "#f59e0b"
+                              : "var(--text-secondary)";
+                          }}
+                        >
+                          <ItemIcon active={active} />
+                          {item.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
