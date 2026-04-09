@@ -8,3 +8,4 @@ node_modules/
 docs/plans/
 bun.lock
 data/
+!src/data/

@@ -11,8 +11,8 @@
 
 import { execFile, spawn } from "node:child_process";
 import { promisify } from "node:util";
-import { mkdir, writeFile, access, readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { mkdir, writeFile, access, readFile, readdir, copyFile } from "node:fs/promises";
+import { join, extname } from "node:path";
 import {
   initBuildState,
   appendBuildLog,
@@ -644,22 +644,76 @@ export async function cleanupSourceArtifacts(
  * Called during realm creation. Falls back to extracting from
  * the image directly if the template dir is empty.
  */
+/**
+ * Seed a realm's etc directory at creation time. Copies in two passes:
+ *
+ *   1. Source-specific template (`/data/sources/{sourceId}/config-template/`) —
+ *      whatever the build pipeline extracted from the worldserver image.
+ *   2. Shared fallback (`$CONFIG_DIR`, default `/data/etc/`) — any `.conf` or
+ *      `.conf.dist` files still missing after pass 1.
+ *
+ * After both passes, any `.conf.dist` without a matching `.conf` is promoted
+ * to `.conf`. `authserver.conf` files are skipped (that config is managed
+ * globally via the auth-config settings API, not per-realm).
+ */
 export async function copyConfigToRealm(sourceId: string, realmId: number): Promise<void> {
-  const templateDir = configTemplateDir(sourceId);
   const realmEtcDir = join(DATA_DIR, String(realmId), "etc");
   await mkdir(realmEtcDir, { recursive: true });
 
+  // Pass 1: source-specific template
+  const templateDir = configTemplateDir(sourceId);
   try {
-    // Use cp to copy all files from template to realm etc
     await run("cp", ["-r", `${templateDir}/.`, realmEtcDir]);
   } catch {
-    // Template may not exist yet if no build has completed
+    // Template may not exist yet if no build has completed or for image sources
   }
 
-  // Create worldserver.conf from .dist if only .dist exists
-  const confDist = join(realmEtcDir, "worldserver.conf.dist");
-  const conf = join(realmEtcDir, "worldserver.conf");
-  if (await exists(confDist) && !(await exists(conf))) {
-    try { await run("cp", [confDist, conf]); } catch { /* ignore */ }
+  // Pass 2: fall back to shared /data/etc for any files still missing
+  const sharedEtc = process.env.CONFIG_DIR ?? "/data/etc";
+  let sharedFiles: string[] = [];
+  try {
+    sharedFiles = await readdir(sharedEtc);
+  } catch {
+    // Shared etc may not exist — nothing to seed
+  }
+
+  for (const file of sharedFiles) {
+    if (file.startsWith("authserver")) continue;
+    const ext = extname(file);
+    if (ext !== ".conf" && !file.endsWith(".conf.dist")) continue;
+
+    const dest = join(realmEtcDir, file);
+    try {
+      await access(dest);
+      // Already exists — skip
+    } catch {
+      try {
+        await copyFile(join(sharedEtc, file), dest);
+      } catch {
+        // Best-effort — ignore per-file failures
+      }
+    }
+  }
+
+  // Promote any .conf.dist → .conf when the .conf is missing
+  let realmFiles: string[] = [];
+  try {
+    realmFiles = await readdir(realmEtcDir);
+  } catch {
+    return;
+  }
+  for (const file of realmFiles) {
+    if (!file.endsWith(".conf.dist")) continue;
+    if (file.startsWith("authserver")) continue;
+    const confName = file.slice(0, -".dist".length);
+    const confPath = join(realmEtcDir, confName);
+    try {
+      await access(confPath);
+      // Already promoted
+    } catch {
+      try {
+        await copyFile(join(realmEtcDir, file), confPath);
+      } catch { /* ignore */ }
+    }
   }
 }
