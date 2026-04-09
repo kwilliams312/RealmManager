@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { Toast, type ToastType } from "@/components/Toast";
+
+import { yaml } from "@codemirror/lang-yaml";
+
+const CodeMirror = dynamic(() => import("@uiw/react-codemirror"), { ssr: false });
 
 interface SourceWithManifest {
   sourceId: string;
@@ -246,33 +251,29 @@ export default function ManifestsPage() {
                   <span style={{ fontSize: 11, color: "var(--text-secondary)", opacity: 0.6 }}>— no manifest configured</span>
                 )}
               </div>
-              <textarea
-                value={editorYaml}
-                onChange={(e) => { setEditorYaml(e.target.value); setValidationError(null); }}
-                spellCheck={false}
-                placeholder={`apiVersion: v1\nkind: RealmSource\nmetadata:\n  name: my-source\n  description: My custom AzerothCore fork`}
-                style={{
-                  flex: 1, resize: "none", fontFamily: "'Fira Code', 'Cascadia Code', monospace", fontSize: 12,
-                  lineHeight: 1.6, padding: "12px 16px", background: "var(--bg-secondary)",
-                  border: `1px solid ${validationError ? "var(--red)" : "var(--border)"}`,
-                  borderRadius: 8, color: "var(--text-primary)", outline: "none",
-                  tabSize: 2,
-                }}
-                onKeyDown={(e) => {
-                  // Tab inserts 2 spaces
-                  if (e.key === "Tab") {
-                    e.preventDefault();
-                    const el = e.currentTarget;
-                    const start = el.selectionStart;
-                    const end = el.selectionEnd;
-                    const newVal = editorYaml.substring(0, start) + "  " + editorYaml.substring(end);
-                    setEditorYaml(newVal);
-                    requestAnimationFrame(() => { el.selectionStart = el.selectionEnd = start + 2; });
-                  }
-                }}
-              />
+              <div style={{
+                flex: 1,
+                border: `1px solid ${validationError ? "var(--red)" : "var(--border)"}`,
+                borderRadius: 8,
+                overflow: "hidden",
+              }}>
+                <CodeMirror
+                  value={editorYaml}
+                  height="100%"
+                  theme="dark"
+                  extensions={[yaml()]}
+                  onChange={(value) => { setEditorYaml(value); setValidationError(null); }}
+                  placeholder={`apiVersion: v1\nkind: RealmSource\nmetadata:\n  name: my-source\n  description: My custom AzerothCore fork`}
+                  basicSetup={{
+                    lineNumbers: true,
+                    foldGutter: true,
+                    highlightActiveLine: true,
+                  }}
+                  style={{ fontSize: 12, height: "100%" }}
+                />
+              </div>
               <div style={{ marginTop: 8, fontSize: 11, color: "var(--text-secondary)", opacity: 0.6 }}>
-                Tab inserts 2 spaces · Changes are applied on next build and realm start
+                Changes are applied on next build and realm start
               </div>
             </div>
           </>

@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
+import { StreamLanguage } from "@codemirror/language";
+import { properties } from "@codemirror/legacy-modes/mode/properties";
 import { Spinner } from "@/components/Spinner";
 import { SaveIcon } from "@/components/Icons";
 
-const CodeMirror = dynamic(() => import("@uiw/react-codemirror"), {
-  ssr: false,
-});
+const CodeMirror = dynamic(() => import("@uiw/react-codemirror"), { ssr: false });
+const confLanguage = StreamLanguage.define(properties);
 
 interface AuthConfigTabProps {
   onToast: (message: string, type?: "success" | "error" | "info") => void;
@@ -161,6 +162,7 @@ export function AuthConfigTab({ onToast }: AuthConfigTabProps) {
           value={content}
           height="550px"
           theme="dark"
+          extensions={[confLanguage]}
           onChange={(value) => setContent(value)}
           basicSetup={{
             lineNumbers: true,

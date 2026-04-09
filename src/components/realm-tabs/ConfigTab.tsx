@@ -2,12 +2,14 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
+import { StreamLanguage } from "@codemirror/language";
+import { properties } from "@codemirror/legacy-modes/mode/properties";
 import type { TabProps } from "./types";
 import { Spinner } from "@/components/Spinner";
 import { SaveIcon, FileIcon } from "@/components/Icons";
 
-// CodeMirror is client-only
 const CodeMirror = dynamic(() => import("@uiw/react-codemirror"), { ssr: false });
+const confLanguage = StreamLanguage.define(properties);
 
 interface ConfigState {
   content: string;
@@ -163,6 +165,7 @@ export function ConfigTab({ realm, onToast }: TabProps) {
           value={activeCfg.content}
           height="550px"
           theme="dark"
+          extensions={[confLanguage]}
           onChange={(value) => {
             setConfigs((prev) => ({
               ...prev,
