@@ -76,7 +76,9 @@ export async function GET(_req: NextRequest, { params }: Params) {
   const id = parseInt(realmId);
   const etcDir = realmEtcDir(id);
 
-  // Seed from shared etc if realm has no configs yet
+  // Safety net for realms created before comprehensive creation-time seeding:
+  // if the etc dir is completely empty, seed from shared etc. Realms created
+  // via the current POST /api/realms handler are seeded in copyConfigToRealm.
   const existing = await listConfFiles(etcDir);
   if (existing.length === 0) {
     await seedRealmConfigs(id);

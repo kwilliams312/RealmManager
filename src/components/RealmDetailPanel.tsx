@@ -6,6 +6,7 @@ import {
   FileIcon,
   ConsoleIcon,
   LogsIcon,
+  SettingsIcon,
 } from "./Icons";
 import { Spinner } from "./Spinner";
 
@@ -31,6 +32,7 @@ const TABS: Array<{
   localOnly?: boolean;
 }> = [
   { id: "settings", label: "Settings", icon: FileIcon, adminOnly: true },
+  { id: "worldserver", label: "Worldserver", icon: SettingsIcon, adminOnly: true, localOnly: true },
   { id: "config", label: "Config", icon: FileIcon, adminOnly: true, localOnly: true },
   { id: "console", label: "Console", icon: ConsoleIcon, adminOnly: true, requiresRunning: true },
   { id: "logs", label: "Logs", icon: LogsIcon, adminOnly: true, localOnly: true },

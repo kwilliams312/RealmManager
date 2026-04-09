@@ -10,6 +10,7 @@ import type { Realm, RealmTab } from "@/types/realm";
 import { AddRealmModal } from "@/components/AddRealmModal";
 
 import { SettingsTab } from "@/components/realm-tabs/SettingsTab";
+import { WorldserverConfigTab } from "@/components/realm-tabs/WorldserverConfigTab";
 import { ConfigTab } from "@/components/realm-tabs/ConfigTab";
 import { ConsoleTab } from "@/components/realm-tabs/ConsoleTab";
 import { LogsTab } from "@/components/realm-tabs/LogsTab";
@@ -123,6 +124,8 @@ export default function RealmsPage() {
     switch (activeTab) {
       case "settings":
         return <SettingsTab {...props} />;
+      case "worldserver":
+        return <WorldserverConfigTab {...props} />;
       case "config":
         return <ConfigTab {...props} />;
       case "console":

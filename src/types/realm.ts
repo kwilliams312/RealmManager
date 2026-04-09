@@ -53,6 +53,7 @@ export interface RealmStatus {
 
 export type RealmTab =
   | "settings"
+  | "worldserver"
   | "config"
   | "console"
   | "logs";
