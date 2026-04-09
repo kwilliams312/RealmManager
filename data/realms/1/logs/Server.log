@@ -777,3 +777,4 @@ Monthly quests reset for all characters.
 Calendar deletion of old events.
 Guild Daily Cap reset.
 > Config: Found config value 'LogsDir' from environment variable 'AC_LOGS_DIR'.
+Could not connect to MySQL database at ac-database: Can't connect to MySQL server on 'ac-database:3306' (111)
