@@ -1,6 +1,110 @@
 # RealmManager
 
-A web-based management dashboard for AzerothCore WoW private servers. Build server images from source, create and manage multiple realms, and monitor your server — all from one UI.
+A complete web-based management platform for AzerothCore WoW private servers. RealmManager handles the full lifecycle — from building server images from source, to player self-service registration and armory lookup — all from a single Docker Compose stack.
+
+<!-- Screenshots — replace with actual captures when available -->
+
+| Dashboard | Armory | Realm Console |
+|:---------:|:------:|:-------------:|
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Armory](docs/screenshots/armory.png) | ![Console](docs/screenshots/console.png) |
+
+> **Note:** Screenshots are placeholders. Replace with actual captures of your running instance.
+
+---
+
+## What It Does
+
+### For Server Operators
+
+- **Build from source** — clone any AzerothCore fork, apply modules, and produce Docker images without touching the command line
+- **Multi-realm management** — spin up multiple independent worldservers, each with isolated databases and configurations
+- **Live controls** — start, stop, restart realms; stream logs in real time; send console commands via the RA protocol
+- **Config editor** — edit worldserver configuration files directly from the browser
+- **Manifest system** — declarative YAML recipes define builds, modules, extra databases, and environment variables per source
+- **Custom branding** — rename the UI, swap colors, set logos and favicons to match your server identity
+- **Account administration** — view all accounts, set GM levels, manage access
+- **Settings dashboard** — database config, GitHub tokens for private repos, auth settings, source management
+
+### For Players
+
+- **Self-service signup** — create a game account from the web without admin intervention
+- **Password management** — change passwords through the web UI
+- **Armory** — search characters across all realms, view level, race, class, guild, honor, and arena stats
+- **Who's online** — see players currently connected to each realm
+- **Guild browser** — browse guilds and their rosters per realm
+- **Character services** — request faction change, race change, or appearance customization (applied at next login)
+- **Getting started guide** — step-by-step instructions for connecting a WoW 3.3.5a client, customizable by the server operator
+
+---
+
+## Architecture
+
+```mermaid
+graph TB
+    subgraph compose["Docker Compose Stack"]
+        direction TB
+
+        webui["<b>ac-webui</b><br/>RealmManager (Next.js)<br/>Port 5555"]
+        db["<b>ac-database</b><br/>MySQL 8.4<br/>Port 3306"]
+        auth["<b>ac-authserver</b><br/>AzerothCore Login Server<br/>Port 3724"]
+        import["<b>ac-db-import</b><br/>Schema Import (runs once)"]
+
+        subgraph realms["Per-Realm Containers (managed by RealmManager)"]
+            direction LR
+            ws1["<b>ac-worldserver-1</b><br/>World: 8085 · RA: 3443 · SOAP: 7878"]
+            ws2["<b>ac-worldserver-2</b><br/>World: 8086 · RA: 3444 · SOAP: 7879"]
+            wsN["<b>ac-worldserver-N</b><br/>World: 8085+N · RA: 3443+N · SOAP: 7878+N"]
+        end
+    end
+
+    browser["Browser<br/>Players & Admins"]
+    client["WoW 3.3.5a Client"]
+
+    browser -->|"HTTP :5555"| webui
+    client -->|"Auth :3724"| auth
+    client -->|"World :8085+"| ws1
+    client -->|"World :8086+"| ws2
+
+    webui -->|"SQL Queries"| db
+    webui -->|"Docker Socket"| realms
+    auth --> db
+    ws1 --> db
+    ws2 --> db
+    import -->|"Schema Setup"| db
+
+    style compose fill:#1a1e2a,stroke:#f59e0b,color:#f5f0e6
+    style realms fill:#0c0e14,stroke:#8b8fa8,color:#f5f0e6
+```
+
+### Key Relationships
+
+| Component | Role | Talks To |
+|-----------|------|----------|
+| **ac-webui** | Next.js app — serves the UI, runs API routes, manages realm lifecycle | MySQL (queries), Docker socket (container control) |
+| **ac-database** | MySQL 8.4 — stores auth, world, and character data for all realms | — |
+| **ac-authserver** | AzerothCore login server — authenticates WoW clients | MySQL (auth DB) |
+| **ac-worldserver-N** | One per realm — runs the game world | MySQL (world/characters DBs) |
+| **ac-db-import** | Runs once at startup to apply database schemas | MySQL |
+
+### Database Layout
+
+```
+ac-database (MySQL 8.4)
+├── acore_auth            ← Shared across all realms (accounts, realmlist)
+├── acore_world           ← Realm 1 world data (or acore_world_N for realm N)
+├── acore_characters      ← Realm 1 character data (or acore_characters_N for realm N)
+└── acore_playerbots_N    ← Extra databases from manifests (per-realm)
+```
+
+### Port Map
+
+| Service | Realm 1 | Realm 2 | Realm N |
+|---------|---------|---------|---------|
+| World   | 8085    | 8086    | 8085 + N-1 |
+| RA      | 3443    | 3444    | 3443 + N-1 |
+| SOAP    | 7878    | 7879    | 7878 + N-1 |
+
+---
 
 ## Quick Start
 
@@ -44,6 +148,8 @@ Visit `http://localhost:5555` — the setup wizard will guide you through:
 
 After setup, log in and create your first realm from the **Realms** page.
 
+---
+
 ## Configuration Reference
 
 All configuration is via `.env` file in the project root.
@@ -60,6 +166,8 @@ All configuration is via `.env` file in the project root.
 | `DOCKER_AUTH_EXTERNAL_PORT` | `3724` | Auth server port |
 | `REALM_HOST_DIR` | `./data/realms` | Host path for realm data |
 | `COMPOSE_PROJECT_NAME` | `realmmanager` | Docker compose project name |
+
+---
 
 ## Managing Realms
 
@@ -80,25 +188,16 @@ Manage manifests from the **Manifests** page in the UI.
 
 ### Realm Controls
 
-Start, stop, and restart realms from the **Dashboard** — controls appear in the realm tab header when you select a realm.
+Start, stop, and restart realms from the **Dashboard** — controls appear in the realm tab header when you select a realm. Each realm has tabs for:
 
-## Architecture
+- **Online** — live player list
+- **Guilds** — guild browser with rosters
+- **Console** — send commands via the RA protocol
+- **Logs** — stream worldserver logs in real time
+- **Config** — edit worldserver configuration files
+- **Settings** — realm-specific settings
 
-```
-docker compose up -d
-├── ac-database      (MySQL 8.4)
-├── ac-db-import     (schema import, runs once)
-├── ac-authserver    (AzerothCore login server)
-└── ac-webui         (RealmManager Next.js app)
-    ├── /setup       → first-run wizard
-    ├── /dashboard   → server overview + realm controls
-    ├── /realms      → realm management
-    ├── /builds      → build sources + build history
-    ├── /manifests   → YAML manifest editor
-    └── /settings    → configuration
-```
-
-Each realm runs as a separate set of Docker containers (`ac-worldserver-N`, `ac-db-import-N`) managed by RealmManager.
+---
 
 ## Development
 
@@ -115,8 +214,26 @@ bun install
 bun dev
 ```
 
-The dev server runs on `http://localhost:3000`. You'll need a MySQL instance with AzerothCore databases — set `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS` environment variables.
+The dev server runs on `http://localhost:5555`. You'll need a MySQL instance with AzerothCore databases — set `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS` environment variables.
+
+### Testing
+
+```bash
+bun test          # Run all tests
+bun test --bail   # Stop on first failure
+```
+
+### Other Commands
+
+| Task | Command |
+|------|---------|
+| Type check | `bun run type-check` |
+| Lint | `bun run lint` |
+| Build | `bun run build` |
+| Docker rebuild | `docker compose up -d --build ac-webui` |
+
+---
 
 ## License
 
-See [LICENSE](LICENSE) for details.
+This project is licensed under the [GNU Affero General Public License v3.0](LICENSE). See [LICENSE](LICENSE) for the full text.
