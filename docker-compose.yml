@@ -76,6 +76,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        DOCKER_GID: ${DOCKER_GID:-988}
     networks:
       - ac-network
     restart: unless-stopped

@@ -1,7 +1,0 @@
-SQL(p): UPDATE character_banned SET active = 0 WHERE unbandate <= UNIX_TIMESTAMP() AND unbandate <> bandate
- [ERROR]: [1053] Server shutdown in progress
-Unhandled MySQL errno 1053. Unexpected behaviour possible.
-SQL(p): UPDATE character_banned SET active = 0 WHERE unbandate <= UNIX_TIMESTAMP() AND unbandate <> bandate
- [ERROR]: [2013] Lost connection to MySQL server during query
-Lost the connection to the MySQL server!
-Unhandled MySQL errno 2005. Unexpected behaviour possible.

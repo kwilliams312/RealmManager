@@ -31,6 +31,11 @@ RUN apt-get update && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
+# Create non-root user with access to Docker socket
+ARG DOCKER_GID=988
+RUN groupadd -g $DOCKER_GID dockerhost && \
+    useradd -r -m -s /bin/false -G dockerhost appuser
+
 WORKDIR /app
 
 # Copy built assets from builder
@@ -42,6 +47,12 @@ COPY --from=builder /app/public ./public/
 
 # Copy seed data for first-boot source seeding
 COPY --from=builder /app/src/data/seed ./data/seed
+
+# Create data directories and set ownership
+RUN mkdir -p /data/realms /data/etc && \
+    chown -R appuser:appuser /app /data
+
+USER appuser
 
 EXPOSE 5555
 

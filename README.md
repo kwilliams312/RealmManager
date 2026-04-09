@@ -4,7 +4,14 @@ A web-based management dashboard for AzerothCore WoW private servers. Build serv
 
 ## Quick Start
 
-### 1. Configure Environment
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/kwilliams312/RealmManager.git
+cd RealmManager
+```
+
+### 2. Configure Environment
 
 ```bash
 cp .env.example .env
@@ -17,7 +24,7 @@ Edit `.env` and set these values **before your first `docker compose up`**:
 | `DOCKER_DB_ROOT_PASSWORD` | `password` | MySQL root password. **Change this for production.** |
 | `WEBUI_SECRET_KEY` | `realmmanager-default-secret...` | Session encryption key. **Must be at least 32 characters. Change this for production.** |
 
-### 2. Start the Stack
+### 3. Start the Stack
 
 ```bash
 docker compose up -d
@@ -28,7 +35,7 @@ This starts:
 - **AzerothCore Auth Server** (login server)
 - **RealmManager Web UI** on port 5555
 
-### 3. First-Run Setup
+### 4. First-Run Setup
 
 Visit `http://localhost:5555` — the setup wizard will guide you through:
 

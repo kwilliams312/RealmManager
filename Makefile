@@ -18,9 +18,10 @@ rebuild: ## Full rebuild of all images
 
 clean: ## Stop everything and remove all volumes (full data wipe)
 	docker compose down -v
-	-docker rm -f $$(docker ps -a --format "{{.Names}}" | grep -E "worldserver-|db-import-[0-9]|client-data-init-[0-9]") 2>/dev/null
-	-docker network rm realmmanager_ac-network 2>/dev/null
-	-docker volume rm realmmanager_ac-client-data 2>/dev/null
+	-@CONTAINERS=$$(docker ps -a --format "{{.Names}}" | grep -E "worldserver-|db-import-[0-9]|client-data-init-[0-9]"); \
+		[ -n "$$CONTAINERS" ] && docker rm -f $$CONTAINERS 2>/dev/null || true
+	-@docker network rm realmmanager_ac-network 2>/dev/null || true
+	-@docker volume rm realmmanager_ac-client-data 2>/dev/null || true
 	@echo "All data wiped."
 
 reset: clean up ## Full reset: wipe everything and start fresh
