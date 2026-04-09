@@ -8,8 +8,6 @@ A complete web-based management platform for AzerothCore WoW private servers. Re
 |:---------:|:------:|:-------------:|
 | ![Dashboard](docs/screenshots/dashboard.png) | ![Armory](docs/screenshots/armory.png) | ![Console](docs/screenshots/console.png) |
 
-> **Note:** Screenshots are placeholders. Replace with actual captures of your running instance.
-
 ---
 
 ## What It Does
