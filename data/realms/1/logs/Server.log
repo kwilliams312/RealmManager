@@ -49,7 +49,7 @@ Using DataDir /azerothcore/env/dist/data/
 WORLD: VMap support included. LineOfSight:true, getHeight:true, indoorCheck:true PetLOS:true
  
 Loading Acore Strings...
->> Loaded 1249 Acore Strings in 3 ms
+>> Loaded 1249 Acore Strings in 2 ms
  
 Loading Module Strings...
 >> Loaded 0 module strings. DB table `module_string` is empty.
@@ -58,7 +58,7 @@ Loading Module Strings Locale...
 >> Loaded 0 module strings locale. DB table `module_string_locale` is empty.
  
 Initialize Data Stores...
->> Initialized 110 Data Stores in 197 ms
+>> Initialized 110 Data Stores in 195 ms
  
 Using enUS DBC Locale As Default. All Available DBC locales: enUS 
  
@@ -69,19 +69,19 @@ Loading Player race data...
 Loading IP Location Database...
  
 Loading Game Graveyard...
->> Loaded 685 Graveyard in 2 ms
+>> Loaded 685 Graveyard in 22 ms
  
 Initializing PlayerDump Tables...
 >> Initialized Tables For PlayerDump in 14 ms.
  
 Loading SpellInfo Store...
->> Loaded Spell Custom Attributes in 30 ms
+>> Loaded Spell Custom Attributes in 31 ms
  
 Loading Spell Cooldown Overrides...
 >> Loaded 1065 Spell Cooldown Overrides entries in 1 ms
  
 Loading SpellInfo Data Corrections...
->> Loading spell dbc data corrections  in 2 ms
+>> Loading spell dbc data corrections  in 1 ms
  
 Loading Spell Rank Data...
 >> Loaded 3502 spell rank records in 1 ms
@@ -93,16 +93,16 @@ Loading SkillLineAbilityMultiMap Data...
 >> Loaded 10219 SkillLineAbility MultiMap Data in 1 ms
  
 Loading SpellInfo Custom Attributes...
->> Loaded 392 spell custom attributes from DB in 0 ms
->> Loaded SpellInfo Custom Attributes in 29 ms
+>> Loaded 392 spell custom attributes from DB in 1 ms
+>> Loaded SpellInfo Custom Attributes in 30 ms
  
 Loading Spell Jump Distances...
->> Loaded 2 spell jump distances in 1 ms
+>> Loaded 2 spell jump distances in 0 ms
  
 Loading SpellInfo Immunity infos...
 >> Loaded SpellInfo immunity infos in 2 ms
 Loading Player Totem models...
->> Loaded 20 player totem model records in 1 ms
+>> Loaded 20 player totem model records in 2 ms
  
 Loading Player Shapeshift models...
 >> Loaded 107 player totem model records in 0 ms
@@ -111,41 +111,41 @@ Loading GameObject Models...
 >> Loaded 2324 GameObject Models in 0 ms
  
 Loading Script Names...
->> Loaded 3277 ScriptNames in 152 ms
+>> Loaded 3277 ScriptNames in 156 ms
  
 Loading Instance Template...
->> Loaded 85 Instance Templates in 1 ms
+>> Loaded 85 Instance Templates in 0 ms
  
 Loading Character Cache...
 No character name data loaded, empty query!
 Loading Instances...
->> Loaded Instances And Binds in 123 ms
+>> Loaded Instances And Binds in 130 ms
  
 Loading Broadcast Texts...
->> Loaded 73039 Broadcast Texts in 72 ms
->> Loaded 583570 Broadcast Text Locales in 354 ms
+>> Loaded 73039 Broadcast Texts in 71 ms
+>> Loaded 583570 Broadcast Text Locales in 346 ms
  
 Loading Localization Strings...
->> Loaded 27335 Creature Locale Strings in 101 ms
->> Loaded 20585 Gameobject Locale Strings in 80 ms
->> Loaded 46096 Item Locale Strings in 159 ms
+>> Loaded 27335 Creature Locale Strings in 99 ms
+>> Loaded 20585 Gameobject Locale Strings in 73 ms
+>> Loaded 46096 Item Locale Strings in 168 ms
 >> Loaded 2481 Item Set Name Locale Strings in 12 ms
->> Loaded 9461 Quest Locale Strings in 116 ms
->> Loaded 13567 Quest Offer Reward Locale Strings in 45 ms
+>> Loaded 9461 Quest Locale Strings in 119 ms
+>> Loaded 13567 Quest Offer Reward Locale Strings in 44 ms
 >> Loaded 7502 Quest Request Items Locale Strings in 25 ms
->> Loaded 8366 Npc Text Locale Strings in 35 ms
->> Loaded 1974 Page Text Locale Strings in 19 ms
->> Loaded 5038 Gossip Menu Option Locale Strings in 24 ms
->> Loaded 453 Points Of Interest Locale Strings in 3 ms
->> Loaded 106 Pet Name Locales Parts in 0 ms
+>> Loaded 8366 Npc Text Locale Strings in 34 ms
+>> Loaded 1974 Page Text Locale Strings in 20 ms
+>> Loaded 5038 Gossip Menu Option Locale Strings in 25 ms
+>> Loaded 453 Points Of Interest Locale Strings in 4 ms
+>> Loaded 106 Pet Name Locales Parts in 2 ms
  
->> Localization Strings loaded in 619 ms
+>> Localization Strings loaded in 625 ms
  
 Loading Page Texts...
->> Loaded 1951 Page Texts in 6 ms
+>> Loaded 1951 Page Texts in 16 ms
  
 Loading Game Object Templates...
->> Loaded 21581 Game Object Templates in 37 ms
+>> Loaded 21581 Game Object Templates in 40 ms
  
 Loading Game Object Template Addons...
 >> Loaded 21493 Game Object Template Addons in 14 ms
@@ -154,7 +154,7 @@ Loading Transport Templates...
 >> Loaded 30 Transport Templates in 3 ms
  
 Loading Spell Required Data...
->> Loaded 50 Spell Required Records in 0 ms
+>> Loaded 50 Spell Required Records in 1 ms
  
 Loading Spell Group Types...
 >> Loaded 569 spell group Definitions in 0 ms
@@ -166,7 +166,7 @@ Loading Spell Proc Conditions and Data...
 >> Loaded 888 spell proc conditions and data in 1 ms
  
 Generating spell proc data from SpellMap...
->> Generated spell proc data for 1344 spells in 2 ms
+>> Generated spell proc data for 1344 spells in 3 ms
  
 Loading Spell Bonus Data...
 >> Loaded 1270 Extra Spell Bonus Data in 1 ms
@@ -175,7 +175,7 @@ Loading Aggro Spells Definitions...
 >> Loaded 106 SpellThreatEntries in 0 ms
  
 Loading Mixology Bonuses...
->> Loaded 21 Mixology Bonuses in 0 ms
+>> Loaded 21 Mixology Bonuses in 1 ms
  
 Loading Spell Group Stack Rules...
 >> Loaded 69 spell group stack rules in 0 ms
@@ -183,7 +183,7 @@ Loading Spell Group Stack Rules...
 >> Loaded 20 SPELL_GROUP_STACK_RULE_EXCLUSIVE_SAME_EFFECT stack rules in 0 ms
  
 Loading NPC Texts...
->> Loaded 8361 Npc Texts in 39 ms
+>> Loaded 8361 Npc Texts in 62 ms
  
 Loading Enchant Spells Proc Datas...
 >> Loaded 42 Enchant Proc Data Definitions in 0 ms
@@ -195,28 +195,28 @@ Loading Disables
 >> Loaded 893 Disables in 1 ms
  
 Loading Items...
->> Loaded 46096 Item Templates in 247 ms
+>> Loaded 46096 Item Templates in 249 ms
  
 Loading Item Set Names...
 >> Loaded 2481 Item Set Names in 3 ms
  
 Loading Creature Model Based Info Data...
->> Loaded 24143 Creature Model Based Info in 15 ms
+>> Loaded 24143 Creature Model Based Info in 16 ms
  
 Loading Creature Custom IDs Config...
 Loading Creature Templates...
->> Loaded 40213 creature template models in 27 ms
+>> Loaded 40213 creature template models in 33 ms
 >> Loaded 2209 Creature Template Resistances in 2 ms
  
 >> Loaded 9556 Creature Template Spells in 4 ms
  
->> Loaded 29947 Creature Definitions in 183 ms
+>> Loaded 29947 Creature Definitions in 193 ms
  
 Loading Equipment Templates...
 >> Loaded 10854 Equipment Templates in 9 ms
  
 Loading Creature Template Addons...
->> Loaded 11989 Creature Template Addons in 10 ms
+>> Loaded 11989 Creature Template Addons in 11 ms
  
 Loading Reputation Reward Rates...
 >> Loaded 16 Reputation Reward Rate in 1 ms
@@ -231,10 +231,10 @@ Loading Points Of Interest Data...
 >> Loaded 463 Points of Interest Definitions in 1 ms
  
 Loading Creature Base Stats...
->> Loaded 400 Creature Base Stats in 2 ms
+>> Loaded 400 Creature Base Stats in 3 ms
  
 Loading Creature Data...
->> Loaded 150942 Creatures in 435 ms
+>> Loaded 150942 Creatures in 431 ms
  
 Loading Creature sparring...
 >> Loaded 0 sparring data. DB table `creature_sparring` is empty.
@@ -255,37 +255,37 @@ Loading Summonable Creature Templates...
 >> Loaded 472 Summonable Creature emplates in 2 ms
  
 Loading Creature Addon Data...
->> Loaded 35306 Creature Addons in 23 ms
+>> Loaded 35306 Creature Addons in 22 ms
  
 Loading Creature Movement Overrides...
 >> Loaded 10 Movement Overrides in 1 ms
  
 Loading Gameobject Data...
->> Loaded 96624 Gameobjects in 286 ms
+>> Loaded 96624 Gameobjects in 293 ms
  
 Loading GameObject Addon Data...
->> Loaded 106 Gameobject Addons in 1 ms
+>> Loaded 106 Gameobject Addons in 2 ms
  
 Loading GameObject Quest Items...
 >> Loaded 862 Gameobject Quest Items in 1 ms
  
 Loading Creature Quest Items...
->> Loaded 4416 Creature Quest Items in 4 ms
+>> Loaded 4416 Creature Quest Items in 3 ms
  
 Loading Creature Linked Respawn...
->> Loaded 4279 Linked Respawns In 2 ms
+>> Loaded 4279 Linked Respawns In 3 ms
  
 Loading Weather Data...
 >> Loaded 35 Weather Definitions in 0 ms
  
 Loading Quests...
->> Loaded 9464 Quests Definitions in 112 ms
+>> Loaded 9464 Quests Definitions in 117 ms
  
 Checking Quest Disables
 >> Checked 673 Quest Disables in 0 ms
  
 Loading Quest POI
->> Loaded 18771 Quest POI definitions in 43 ms
+>> Loaded 18771 Quest POI definitions in 41 ms
  
 Loading Quests Starters and Enders...
 Loading GO Start Quest Data...
@@ -295,41 +295,41 @@ Loading GO End Quest Data...
 >> Loaded 457 Quest Relations From gameobject_questender in 1 ms
  
 Loading Creature Start Quest Data...
->> Loaded 7447 Quest Relations From creature_queststarter in 6 ms
+>> Loaded 7447 Quest Relations From creature_queststarter in 7 ms
  
 Loading Creature End Quest Data...
 >> Loaded 7901 Quest Relations From creature_questender in 7 ms
  
 Loading Quest Greetings...
->> Loaded 206 quest_greeting in 2 ms
+>> Loaded 206 quest_greeting in 1 ms
  
 Loading Quest Greeting Locales...
 >> Loaded 75 quest greeting Locale Strings in 1 ms
  
 Loading Quest Money Rewards...
->> Loaded 800 Quest Money Rewards in 0 ms
+>> Loaded 800 Quest Money Rewards in 1 ms
  
 Loading Objects Pooling Data...
->> Loaded 9228 Objects Pools In 31 ms
+>> Loaded 9228 Objects Pools In 6 ms
  
 Loading Creatures Pooling Data...
 >> Loaded 1668 Creatures In Pools in 1 ms
  
 Loading Gameobjects Pooling Data...
->> Loaded 32865 Gameobjects In Pools in 11 ms
+>> Loaded 32865 Gameobjects In Pools in 13 ms
  
 Loading Mother Pooling Data...
 >> Loaded 6476 Pools In Mother Pools in 7 ms
  
 Loading Quest Pooling Data...
->> Loaded 161 Quests In Pools in 0 ms
+>> Loaded 161 Quests In Pools in 1 ms
  
 Starting Objects Pooling System...
  
 Loading Game Event Data...
->> Loaded 100 Holiday Dates (100 dynamic, 0 game_event overrides) in 2 ms
+>> Loaded 100 Holiday Dates (100 dynamic, 0 game_event overrides) in 1 ms
 Loading Game Events...
->> Loaded 181 Game Events in 0 ms
+>> Loaded 181 Game Events in 1 ms
  
 Loading Game Event Saves Data...
 >> Loaded 0 Game Event Saves In Game Events. DB Table `game_event_save` Is Empty.
@@ -338,10 +338,10 @@ Loading Game Event Prerequisite Data...
 >> Loaded 0 Game Rvent Prerequisites in Game Events. DB Table `game_event_prerequisite` Is Empty.
  
 Loading Game Event Creature Data...
->> Loaded 11779 Creatures In Game Events in 2 ms
+>> Loaded 11779 Creatures In Game Events in 4 ms
  
 Loading Game Event GO Data...
->> Loaded 32386 Gameobjects In Game Events in 5 ms
+>> Loaded 32386 Gameobjects In Game Events in 9 ms
  
 Loading Game Event Model/Equipment Change Data...
 >> Loaded 0 Model/Equipment Changes In Game Events. DB Table `game_event_model_equip` Is Empty.
@@ -350,7 +350,7 @@ Loading Game Event Quest Data...
 >> Loaded 242 Quests Additions In Game Events in 0 ms
  
 Loading Game Event GO Quest Data...
->> Loaded 78 Quests Additions In Game Events in 0 ms
+>> Loaded 78 Quests Additions In Game Events in 1 ms
  
 Loading Game Event Quest Condition Data...
 >> Loaded 0 quest event Conditions In Game Events. DB Table `game_event_quest_condition` Is Empty.
@@ -362,31 +362,31 @@ Loading Game Event Condition Save Data...
 >> Loaded 0 Condition Saves In Game Events. DB Table `game_event_condition_save` Is Empty.
  
 Loading Game Event NPCflag Data...
->> Loaded 5 Npcflags In Game Events In 1 ms
+>> Loaded 5 Npcflags In Game Events In 0 ms
  
 Loading Game Event Seasonal Quest Relations...
->> Loaded 690 Quests Additions In Game Events in 0 ms
+>> Loaded 690 Quests Additions In Game Events in 1 ms
  
 Loading Game Event Vendor Additions Data...
 >> Loaded 129 Vendor Additions In Game Events in 0 ms
  
 Loading Game Event Battleground Data...
->> Loaded 6 Battleground Holidays In Game Events in 1 ms
+>> Loaded 6 Battleground Holidays In Game Events in 0 ms
  
 Loading Game Event Pool Data...
 >> Loaded 8 Pools For Game Events in 0 ms
  
 Loading UNIT_NPC_FLAG_SPELLCLICK Data...
->> Loaded 334 Spellclick Definitions in 2 ms
+>> Loaded 334 Spellclick Definitions in 4 ms
  
 Loading Vehicle Template Accessories...
->> Loaded 196 Vehicle Template Accessories in 0 ms
+>> Loaded 196 Vehicle Template Accessories in 1 ms
  
 Loading Vehicle Accessories...
->> Loaded 1 Vehicle Accessories in 1 ms
+>> Loaded 1 Vehicle Accessories in 0 ms
  
 Loading Vehicle Seat Addon Data...
->> Loaded 32 Vehicle Seat Addon entries in 0 ms
+>> Loaded 32 Vehicle Seat Addon entries in 1 ms
 Loading SpellArea Data...
 >> Using ICC Buff Horde: 73822
 >> Using ICC Buff Alliance: 73828
@@ -399,13 +399,13 @@ Loading Area Trigger Teleport Definitions...
 >> Loaded 276 Area Trigger Teleport Definitions in 1 ms
  
 Loading Access Requirements...
->> Loaded 121 Rows From dungeon_access_template And 35 Rows From dungeon_access_requirements in 7 ms
+>> Loaded 121 Rows From dungeon_access_template And 35 Rows From dungeon_access_requirements in 9 ms
  
 Loading Quest Area Triggers...
->> Loaded 76 Quest Trigger Points in 1 ms
+>> Loaded 76 Quest Trigger Points in 0 ms
  
 Loading Tavern Area Triggers...
->> Loaded 113 Tavern Triggers in 0 ms
+>> Loaded 113 Tavern Triggers in 1 ms
  
 Loading AreaTrigger Script Names...
 >> Loaded 176 Areatrigger Scripts in 1 ms
@@ -429,7 +429,7 @@ Loading Spell Target Coordinates...
 >> Loaded 684 Spell Teleport Coordinates in 1 ms
  
 Loading Enchant Custom Attributes...
->> Loaded 47 Custom Enchant Attributes in 0 ms
+>> Loaded 47 Custom Enchant Attributes in 2 ms
  
 Loading linked Spells...
 >> Loaded 608 Linked Spells in 1 ms
@@ -452,13 +452,13 @@ Loading Player Create Action Data...
 >> Loaded 283 Player Create Actions in 1 ms
  
 Loading Player Create Level Stats Data...
->> Loaded 746 Level Stats Definitions in 1 ms
+>> Loaded 746 Level Stats Definitions in 2 ms
  
 Loading Player Create XP Data...
->> Loaded 79 XP For Level Definitions in 1 ms
+>> Loaded 79 XP For Level Definitions in 0 ms
  
 Loading Exploration BaseXP Data...
->> Loaded 80 BaseXP Definitions in 0 ms
+>> Loaded 80 BaseXP Definitions in 1 ms
  
 Loading Pet Name Parts...
 >> Loaded 312 Pet Name Parts in 1 ms
@@ -467,34 +467,34 @@ Loading The Max Pet Number...
 >> Loaded The Max Pet Number: 0 in 0 ms
  
 Loading Pet Level Stats...
->> Loaded 2800 Level Pet Stats Definitions in 3 ms
+>> Loaded 2800 Level Pet Stats Definitions in 4 ms
  
 Loading Player Level Dependent Mail Rewards...
->> Loaded 24 Level Dependent Mail Rewards in 1 ms
+>> Loaded 24 Level Dependent Mail Rewards in 0 ms
  
 Load Mail Server definitions...
 >> Loaded 0 server mail rewards. DB table `mail_server_template` is empty.
  
 Loading Creature Loot Templates...
->> Loaded 93663 Creature Loot Templates in 55 ms
+>> Loaded 93663 Creature Loot Templates in 58 ms
  
 Loading Fishing Loot Templates...
 >> Loaded 251 Fishing Loot Templates in 1 ms
  
 Loading Gameobject Loot Templates...
->> Loaded 17967 Gameobject Loot Templates in 16 ms
+>> Loaded 17967 Gameobject Loot Templates in 18 ms
  
 Loading Item Loot Templates...
->> Loaded 3269 item loot templates in 4 ms
+>> Loaded 3269 item loot templates in 9 ms
  
 Loading Mail Loot Templates...
 >> Loaded 112 mail loot templates in 1 ms
  
 Loading Milling Loot Templates...
->> Loaded 45 milling loot templates in 2 ms
+>> Loaded 45 milling loot templates in 1 ms
  
 Loading Pickpocketing Loot Templates...
->> Loaded 13525 pickpocketing loot templates in 12 ms
+>> Loaded 13525 pickpocketing loot templates in 15 ms
  
 Loading Skinning Loot Templates...
 >> Loaded 1940 skinning loot templates in 4 ms
@@ -506,22 +506,22 @@ Loading Prospecting Loot Templates...
 >> Loaded 48 prospecting loot templates in 1 ms
  
 Loading Spell Loot Templates...
->> Loaded 163 spell loot templates in 2 ms
+>> Loaded 163 spell loot templates in 1 ms
  
 Loading Reference Loot Templates...
->> Loaded reference loot templates in 19 ms
+>> Loaded reference loot templates in 21 ms
  
 Loading Player Loot Templates...
 >> Loaded 20 player loot templates in 1 ms
  
 Loading Skill Discovery Table...
->> Loaded 347 skill discovery definitions in 1 ms
+>> Loaded 347 skill discovery definitions in 2 ms
  
 Loading Skill Extra Item Table...
->> Loaded 227 spell specialization definitions in 1 ms
+>> Loaded 227 spell specialization definitions in 0 ms
  
 Loading Skill Perfection Data Table...
->> Loaded 72 spell perfection definitions in 0 ms
+>> Loaded 72 spell perfection definitions in 1 ms
  
 Loading Skill Fishing Base Level Requirements...
 >> Loaded 94 areas for fishing base skill level in 1 ms
@@ -533,13 +533,13 @@ Loading Achievement Criteria Lists...
 >> Loaded 7494 achievement criteria in 1 ms
  
 Loading Achievement Criteria Data...
->> Loaded 2816 additional achievement criteria data in 4 ms
+>> Loaded 2816 additional achievement criteria data in 3 ms
  
 Loading Achievement Rewards...
 >> Loaded 115 achievement rewards in 1 ms
  
 Loading Achievement Reward Locales...
->> Loaded 103 Achievement Reward Locale Strings in 1 ms
+>> Loaded 103 Achievement Reward Locale Strings in 2 ms
  
 Loading Completed Achievements...
 >> Loaded 0 completed achievements. DB table `character_achievement` is empty.
@@ -608,16 +608,16 @@ Loading Trainers...
 Loading Creature default trainers...
 >> Loaded 806 default trainers in 1 ms
 Loading Gossip Menu...
->> Loaded 6080 gossip_menu entries in 3 ms
+>> Loaded 6080 gossip_menu entries in 4 ms
  
 Loading Gossip Menu Options...
->> Loaded 4676 gossip_menu_option entries in 8 ms
+>> Loaded 4676 gossip_menu_option entries in 9 ms
  
 Loading Vendors...
->> Loaded 37714 Vendors in 22 ms
+>> Loaded 37714 Vendors in 25 ms
  
 Loading Waypoints...
->> Loaded 146471 waypoints in 121 ms
+>> Loaded 146471 waypoints in 130 ms
  
 Loading Waypoint Addons...
 >> Loaded 0 waypoint addon data. DB table `waypoint_data_addon` is empty!
@@ -626,31 +626,31 @@ Loading SmartAI Waypoints...
 >> Loaded 854 SmartAI waypoint paths (total 13908 waypoints) in 4 ms
  
 Loading Creature Formations...
->> Loaded 6010 Creatures In Formations in 8 ms
+>> Loaded 6010 Creatures In Formations in 6 ms
  
 Loading WorldStates...
->> Loaded 205 World States in 0 ms
+>> Loaded 205 World States in 1 ms
  
 Loading Conditions...
->> Loaded 14618 conditions in 20 ms
+>> Loaded 14618 conditions in 22 ms
  
 Loading Faction Change Achievement Pairs...
 >> Loaded 124 faction change achievement pairs in 1 ms
  
 Loading Faction Change Spell Pairs...
->> Loaded 113 faction change spell pairs in 0 ms
+>> Loaded 113 faction change spell pairs in 1 ms
  
 Loading Faction Change Item Pairs...
 >> Loaded 1395 faction change item pairs in 2 ms
  
 Loading Faction Change Reputation Pairs...
->> Loaded 15 faction change reputation pairs in 1 ms
+>> Loaded 15 faction change reputation pairs in 0 ms
  
 Loading Faction Change Title Pairs...
->> Loaded 22 faction change title pairs in 0 ms
+>> Loaded 22 faction change title pairs in 1 ms
  
 Loading Faction Change Quest Pairs...
->> Loaded 293 faction change quest pairs in 1 ms
+>> Loaded 293 faction change quest pairs in 0 ms
  
 Loading GM Tickets...
 >> Loaded 0 GM tickets. DB table `gm_ticket` is empty!
@@ -673,7 +673,7 @@ Loading Motd locale...
 >> Loaded motd definitions in 1 ms
  
 Loading spell_scripts...
->> Loaded 130 script definitions in 0 ms
+>> Loaded 130 script definitions in 1 ms
  
 Loading event_scripts...
 >> Loaded 461 script definitions in 1 ms
@@ -685,21 +685,21 @@ Loading Spell Script Names...
 >> Loaded 2699 spell script names in 1 ms
  
 Loading Creature Texts...
->> Loaded 18564 Creature Texts For 4171 Creatures in 25 ms
+>> Loaded 18564 Creature Texts For 4171 Creatures in 30 ms
  
 Loading Creature Text Locales...
->> Loaded 14027 Creature Text Locale in 17 ms
+>> Loaded 14027 Creature Text Locale in 16 ms
  
 Loading Scripts...
 Loading Script Waypoints For 60 Creature(s)...
->> Loaded 2058 Script Waypoint nodes in 3 ms
->> Loaded 3335 C++ scripts in 30 ms
+>> Loaded 2058 Script Waypoint nodes in 4 ms
+>> Loaded 3335 C++ scripts in 33 ms
  
 Validating Spell Scripts...
 >> Validated 3264 scripts in 2 ms
  
 Loading SmartAI Scripts...
->> Loaded 14248 SmartAI scripts in 110 ms
+>> Loaded 14248 SmartAI scripts in 113 ms
  
 Loading Calendar Data...
 >> Loaded 0 calendar events
@@ -719,13 +719,13 @@ Player::DeleteOldChars: Deleting all characters which have been deleted 30 days 
  
 Initializing Opcodes...
 Loading Arena Season Rewards...
->> Loaded 39 arena season rewards in 2 ms
+>> Loaded 39 arena season rewards in 1 ms
  
 Loading Active Arena Season...
 Arena Season 8 loaded...
  
 Starting Battleground System
->> Loaded 13 battlegrounds in 0 ms
+>> Loaded 13 battlegrounds in 1 ms
  
 Starting Outdoor PvP System
 >> Loaded 7 outdoor PvP definitions in 0 ms
@@ -734,7 +734,7 @@ Starting Battlefield System
 Battlefield: Wintergrasp successfully initiated.
  
 Loading Transports...
->> Spawned 20 continent motion transports in 57 ms
+>> Spawned 20 continent motion transports in 65 ms
 Loading Warden Checks...
 >> Loaded 793 warden checks.
  
@@ -764,10 +764,10 @@ Load Channel Rights...
 Load Channels...
 >> Loaded 0 channels. DB table `channels` is empty.
 Loading AntiDos opcode policies
->> Loaded 102 AntiDos Opcode Policies in 0 ms
+>> Loaded 102 AntiDos Opcode Policies in 1 ms
  
  
-WORLD: World Initialized In 0 Minutes 3 Seconds
+WORLD: World Initialized In 0 Minutes 4 Seconds
  
 > Config: Found config value 'Ra.Enable' from environment variable 'AC_RA_ENABLE'.
 > Config: Found config value 'SOAP.Enabled' from environment variable 'AC_SOAP_ENABLED'.
@@ -777,4 +777,3 @@ Monthly quests reset for all characters.
 Calendar deletion of old events.
 Guild Daily Cap reset.
 > Config: Found config value 'LogsDir' from environment variable 'AC_LOGS_DIR'.
-Could not connect to MySQL database at ac-database: Can't connect to MySQL server on 'ac-database:3306' (111)

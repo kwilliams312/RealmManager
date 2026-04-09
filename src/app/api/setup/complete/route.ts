@@ -97,7 +97,8 @@ export async function POST(req: NextRequest) {
       []
     );
 
-    // Auto-build the first seeded source in the background
+    // Auto-build the first seeded source in the background.
+    // The build pipeline's post-build hook will assign the build to realm 1.
     let buildSourceId: string | null = null;
     try {
       const { getAllSources } = await import("@/lib/build-sources-db");

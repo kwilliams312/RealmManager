@@ -19,14 +19,20 @@ export default function SetupPage() {
   const [buildStatus, setBuildStatus] = useState<string>("idle");
   const logRef = useRef<HTMLDivElement>(null);
 
-  // Check if setup is needed
+  // Check if setup is needed or if initial build is still running
   useEffect(() => {
     fetch("/api/setup/status")
       .then((r) => r.json())
       .then((data) => {
         if (!data.needsSetup) {
-          setAlreadySetup(true);
-          router.replace("/");
+          if (data.initialBuildInProgress && data.initialBuildSourceId) {
+            // Setup done but build still running — show build progress
+            setBuildSourceId(data.initialBuildSourceId);
+            setStep("building");
+          } else {
+            setAlreadySetup(true);
+            router.replace("/");
+          }
         }
       })
       .catch(() => {});
@@ -228,14 +234,14 @@ export default function SetupPage() {
           <div>
             <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>
               {buildDone
-                ? buildStatus === "failed" ? "Build Failed" : "Build Complete"
+                ? buildStatus === "failed" ? "Build Failed" : "Build Complete!"
                 : "Building Server..."}
             </h2>
             <p style={{ color: "var(--text-secondary)", fontSize: 13, marginBottom: 16 }}>
               {buildDone
                 ? buildStatus === "failed"
                   ? "The build encountered errors. You can retry from the Builds page after logging in."
-                  : "Your AzerothCore server image has been built successfully."
+                  : "Your AzerothCore server image has been built and assigned to the default realm. Log in to start your server."
                 : "Building the default AzerothCore server image. This may take several minutes."}
             </p>
 
@@ -278,8 +284,8 @@ export default function SetupPage() {
 
             {buildDone && (
               <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 20 }}>
-                <button onClick={() => setStep("done")} style={btnStyle}>
-                  Continue
+                <button onClick={() => router.push("/login")} style={btnStyle}>
+                  {buildStatus === "failed" ? "Continue to Login" : "Go to Login"}
                 </button>
               </div>
             )}
@@ -291,9 +297,7 @@ export default function SetupPage() {
             <div style={{ fontSize: 48, marginBottom: 16 }}>&#10003;</div>
             <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Setup Complete</h2>
             <p style={{ color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.6, marginBottom: 32 }}>
-              Your admin account has been created
-              {buildStatus === "success" ? " and the server image has been built" : ""}.
-              You can now log in and start managing your realms.
+              Your admin account has been created. You can now log in and start managing your realms.
             </p>
             <button onClick={() => router.push("/login")} style={btnStyle}>
               Go to Login

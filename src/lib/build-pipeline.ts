@@ -529,6 +529,13 @@ async function buildSource(
     await updateBuildStatus(buildId, "success", buildLog);
     updateMemStatus(sourceId, "idle");
 
+    // Step 5b: Auto-assign build to realms that have no active build
+    try {
+      await autoAssignBuildToRealms(sourceId, buildId, tag, log);
+    } catch (err) {
+      log(`Warning: auto-assign failed: ${err}`);
+    }
+
     // Auto-prune to 5 builds per source
     try {
       const prunedTags = await pruneOldBuilds(sourceId, 5);
@@ -547,6 +554,63 @@ async function buildSource(
     log(`Cleaning up failed build image ${fullRef}...`);
     await safeRmi(fullRef);
     throw err;
+  }
+}
+
+/**
+ * After a successful build, check if any realm needs this build assigned.
+ * Assigns to realms that have no active build (e.g., realm 1 after first-boot setup).
+ * Also generates the compose file and copies config templates.
+ */
+async function autoAssignBuildToRealms(
+  sourceId: string,
+  buildId: number,
+  tag: string,
+  log: (line: string) => void
+): Promise<void> {
+  const { query } = await import("./db");
+  const DB_REALMD = (await import("./db")).DB_REALMD;
+  const { setRealmActiveBuild, getSourceBySlug } = await import("./build-sources-db");
+  const { getBuild } = await import("./builds-db");
+
+  // Find realms with no active build
+  const realms = await query<{ id: number; name: string }>(
+    `SELECT r.id, r.name FROM ${DB_REALMD}.realmlist r
+     LEFT JOIN ${DB_REALMD}.realm_source rs ON r.id = rs.realmid
+     WHERE rs.active_build_id IS NULL OR rs.realmid IS NULL`
+  );
+
+  if (realms.length === 0) return;
+
+  const build = await getBuild(buildId);
+  const source = await getSourceBySlug(sourceId);
+  if (!build || !source) return;
+
+  const { generateRealmCompose, buildManifestEnv } = await import("./realm-compose");
+
+  for (const realm of realms) {
+    try {
+      log(`Auto-assigning build #${buildId} to realm ${realm.id} (${realm.name})...`);
+      await setRealmActiveBuild(realm.id, buildId);
+
+      // Generate compose and config for this realm
+      const realmDir = join(DATA_DIR, String(realm.id));
+      await mkdir(join(realmDir, "etc", "modules"), { recursive: true });
+      await mkdir(join(realmDir, "logs"), { recursive: true });
+
+      const manifestEnv = buildManifestEnv(source.sourceManifest, realm.id, sourceId);
+      const compose = generateRealmCompose(realm.id, imageRef(tag), {
+        configPath: source.configPath,
+        dataPath: source.dataPath,
+        logsPath: source.logsPath,
+      }, manifestEnv);
+      await writeFile(join(realmDir, "docker-compose.yml"), compose);
+
+      await copyConfigToRealm(sourceId, realm.id);
+      log(`Realm ${realm.id} configured with build #${buildId}.`);
+    } catch (err) {
+      log(`Warning: failed to auto-assign build to realm ${realm.id}: ${err}`);
+    }
   }
 }
 

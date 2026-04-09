@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { HiveIconSmall } from "@/components/Icons";
@@ -9,6 +9,18 @@ import { useBranding, splitServerName } from "@/hooks/useBranding";
 
 export default function LoginPage() {
   const router = useRouter();
+
+  // Redirect to setup if initial build is still running
+  useEffect(() => {
+    fetch("/api/setup/status")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.needsSetup || data.initialBuildInProgress) {
+          router.replace("/setup");
+        }
+      })
+      .catch(() => {});
+  }, [router]);
   const branding = useBranding();
   const brandName = splitServerName(branding);
   const [username, setUsername] = useState("");
